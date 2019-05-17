@@ -1,0 +1,115 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body id="body">
+  <div id="container">
+    <canvas id="canvas" width="640" height="480"></canvas>
+  </div>
+<script>
+const TAU = 2 * Math.PI;
+
+var canvas = document.getElementById("canvas");
+const W = canvas.width;
+const H = canvas.height;
+const G = 1;
+var canvasClientRatio = 1;
+var ctx = canvas.getContext("2d");
+
+var midpress = false;
+var cursor = new Point(-1, -1);
+
+var points = [];
+var ball = new Ball();
+
+(function init() {
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 5;
+  requestAnimationFrame(tick);
+})();
+
+function tick() {
+  update();
+  draw();
+  requestAnimationFrame(tick);
+}
+
+function update() {
+  ball.update()
+}
+
+function draw() {
+  ctx.fillStyle = "#777";
+  ctx.fillRect(0, 0, W, H);
+  ball.draw(ctx);
+  drawLines(ctx, points);
+}
+
+function drawLines(ctx, points) {
+  let len = points.length;
+  if (len < 1) return;
+
+  ctx.strokeStyle = '#AAA'
+  ctx.beginPath();
+  let pt;
+  for (let i = 0; i < len; i++) {
+    pt = points[i]
+    ctx.lineTo(pt.x, pt.y);
+  }
+  ctx.stroke();
+
+  if (midpress) { //replace to true for constant tracking
+    ctx.strokeStyle = 'white'
+    ctx.beginPath();
+    ctx.moveTo(pt.x, pt.y);
+    ctx.lineTo(cursor.x, cursor.y);
+    ctx.stroke();
+  }
+}
+
+canvas.onmousemove = function(e) {
+  let x = (e.clientX - canvas.offsetLeft) * canvasClientRatio;
+  let y = (e.clientY - canvas.offsetTop) * canvasClientRatio;
+  cursor = new Point(x, y);
+}
+
+canvas.onmousedown = function(e) {
+  midpress = true;
+}
+
+canvas.onmouseup = function(e) {
+  points.push(cursor);
+  midpress = false;
+}
+
+function Ball() {
+  this.x = 200;
+  this.y = 0;
+  this.vy = 0;
+  this.vx = 0;
+  this.r = 10;
+  this.color = "red";
+  this.update = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += G;
+  }
+  this.draw = function(ctx) {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, TAU);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+}
+
+function Point(x, y) {
+  this.x = x;
+  this.y = y;
+}
+
+</script>
+</body>
+</html>
