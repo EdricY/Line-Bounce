@@ -8,33 +8,42 @@
   <div id="container">
     <canvas id="canvas" width="640" height="480"></canvas>
   </div>
+<script src="geometry.js"></script>
 <script>
 const TAU = 2 * Math.PI;
 
 var canvas = document.getElementById("canvas");
 const W = canvas.width;
 const H = canvas.height;
-const G = 1;
+const G = .1;
+const BR = 10;
+const LW = 5;
+const R = BR + LW/2;
+
 var canvasClientRatio = 1;
 var ctx = canvas.getContext("2d");
 
 var midpress = false;
 var cursor = new Point(-1, -1);
 
-var points = [];
+var course = new LineCourse();
 var ball = new Ball();
 
 (function init() {
+  ctx.strokeStyle = '#FFF';
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  ctx.lineWidth = 5;
+  ctx.lineWidth = LW;
+
   requestAnimationFrame(tick);
 })();
 
 function tick() {
   update();
   draw();
-  requestAnimationFrame(tick);
+  // setTimeout( ()=> 
+  requestAnimationFrame(tick)
+  // , 100)
 }
 
 function update() {
@@ -45,29 +54,17 @@ function draw() {
   ctx.fillStyle = "#777";
   ctx.fillRect(0, 0, W, H);
   ball.draw(ctx);
-  drawLines(ctx, points);
+  course.draw(ctx);
+  if (midpress) drawPreviewLine(cursor);
 }
 
-function drawLines(ctx, points) {
-  let len = points.length;
-  if (len < 1) return;
-
-  ctx.strokeStyle = '#AAA'
+function drawPreviewLine(cursor) {
+  let pt = course.lastPt;
+  if (pt == null) return;
   ctx.beginPath();
-  let pt;
-  for (let i = 0; i < len; i++) {
-    pt = points[i]
-    ctx.lineTo(pt.x, pt.y);
-  }
+  ctx.moveTo(pt.x, pt.y);
+  ctx.lineTo(cursor.x, cursor.y);
   ctx.stroke();
-
-  if (midpress) { //replace to true for constant tracking
-    ctx.strokeStyle = 'white'
-    ctx.beginPath();
-    ctx.moveTo(pt.x, pt.y);
-    ctx.lineTo(cursor.x, cursor.y);
-    ctx.stroke();
-  }
 }
 
 canvas.onmousemove = function(e) {
@@ -81,18 +78,81 @@ canvas.onmousedown = function(e) {
 }
 
 canvas.onmouseup = function(e) {
-  points.push(cursor);
+  course.addPoint(cursor);
   midpress = false;
+}
+
+function LineCourse() {
+  this.points = [];
+  this.canvas = document.createElement("canvas");
+  this.canvas.width = canvas.width;
+  this.canvas.height = canvas.height;
+  this.canvas.hidden = true;
+  this.ctx = this.canvas.getContext("2d");
+  this.ctx.strokeStyle = '#AAA';
+  this.ctx.lineCap = 'round';
+  this.ctx.lineJoin = 'round';
+  this.ctx.lineWidth = LW;
+
+  this.ctx.beginPath();
+
+  this.lastPt = null;
+
+  this.addPoint = function(pt) {
+    this.points.push(pt);
+    this.ctx.lineTo(pt.x, pt.y);
+    this.ctx.stroke()
+    this.lastPt = pt;
+  }
+
+  this.draw = function(ctx) {
+    ctx.drawImage(this.canvas, 0, 0);
+  }
+
+  this.drawToCursor = function(pt) {
+    if (midpress) { //replace to true for constant tracking
+      this.ctx.strokeStyle = 'white'
+      this.ctx.beginPath();
+      this.ctx.moveTo(pt.x, pt.y);
+      this.ctx.lineTo(cursor.x, cursor.y);
+      this.ctx.stroke();
+    }
+  }
+
+  this.collides = function(ball) {
+    let len = this.points.length;
+    if (len < 2) return null;
+
+    let p2 = this.points[0];
+    for (let i = 1; i < len; i++) {
+      let p1 = p2;
+      p2 = this.points[i];
+      let line = {p1:p1, p2:p2};
+      let r = ball.r + this.ctx.lineWidth/2;
+      let collision = geometry.circleIntersectsLineSeg(ball, R, line);
+      if (collision != null) return collision;
+    }
+    return null;
+  }
 }
 
 function Ball() {
   this.x = 200;
-  this.y = 0;
+  this.y = 20;
   this.vy = 0;
   this.vx = 0;
-  this.r = 10;
+  this.r = BR;
   this.color = "red";
+
   this.update = function() {
+    let collision = course.collides(this);
+    if (collision != null) {
+      // let pt = collision[0];
+      // this.x = pt.x;
+      // this.y = pt.y - R;
+      // this.vy = -5;
+    }
+
     this.x += this.vx;
     this.y += this.vy;
     this.vy += G;
