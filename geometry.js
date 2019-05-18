@@ -1,7 +1,7 @@
 geometry = {
   //stackoverflow.com/questions/37224912
   circleIntersectsLineSeg : function(circle, radius, line){
-    var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
+    let b, c, d, u1, u2, ret, retP1, retP2, v1, v2, empty;
     v1 = {};
     v2 = {};
     v1.x = line.p2.x - line.p1.x;
@@ -19,18 +19,22 @@ geometry = {
     u2 = (b + d) / c;    
     retP1 = {};   // return points
     retP2 = {}
-    ret = []; // return array
+    ret = {}; // return array
+    empty = true;
     if (u1 <= 1 && u1 >= 0){  // add point if on the line segment
       retP1.x = line.p1.x + v1.x * u1;
       retP1.y = line.p1.y + v1.y * u1;
-      ret[0] = retP1;
+      ret.p1 = retP1;
+      empty = false;
     }
+
     if (u2 <= 1 && u2 >= 0){  // second add point if on the line segment
       retP2.x = line.p1.x + v1.x * u2;
       retP2.y = line.p1.y + v1.y * u2;
-      ret.push(retP2);
+      ret.p2 = retP2;
+      empty = false;
     }
-    if (ret.length == 0) return null;
+    if (empty) return null;
     return ret;
 }
   

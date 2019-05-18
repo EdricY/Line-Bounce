@@ -19,6 +19,7 @@ const G = .1;
 const BR = 10;
 const LW = 5;
 const R = BR + LW/2;
+const MU = .9
 
 var canvasClientRatio = 1;
 var ctx = canvas.getContext("2d");
@@ -130,7 +131,14 @@ function LineCourse() {
       let line = {p1:p1, p2:p2};
       let r = ball.r + this.ctx.lineWidth/2;
       let collision = geometry.circleIntersectsLineSeg(ball, R, line);
-      if (collision != null) return collision;
+      if (collision == null) continue;
+      
+      //calculate normal
+      let dx = p2.x - p1.x
+      let dy = p2.y - p1.y
+      let n = new Vector(-dy, dx);
+      collision.normal = n.normalize();
+      return collision
     }
     return null;
   }
@@ -139,24 +147,39 @@ function LineCourse() {
 function Ball() {
   this.x = 200;
   this.y = 20;
-  this.vy = 0;
-  this.vx = 0;
+  this.v = new Vector(0, 0);
   this.r = BR;
   this.color = "red";
 
   this.update = function() {
     let collision = course.collides(this);
-    if (collision != null) {
-      // let pt = collision[0];
-      // this.x = pt.x;
-      // this.y = pt.y - R;
-      // this.vy = -5;
-    }
+    if (collision != null) { // TODO: nudge and check next collision
+      let s = this.v.magnitude();
 
-    this.x += this.vx;
-    this.y += this.vy;
-    this.vy += G;
+      // if (collision.p1) {
+      //   this.x = collision.p1.x
+      //   this.y = collision.p1.y
+      // } else {
+      //   this.x = collision.p2.x
+      //   this.y = collision.p2.y
+      // }
+      
+      // let nudge = this.v.normalize().scale(-R*1.1);
+      // this.x += nudge.x
+      // this.y += nudge.y
+
+      let v = this.v.normalize();
+      let n = collision.normal;
+      let r = v.plus(n.scale(-2*(v.dot(n))));
+      this.v = r.scale(s * MU);
+      
+    } 
+    
+    this.x += this.v.x;
+    this.y += this.v.y;
+    this.v = this.v.plusxy(0, G);
   }
+
   this.draw = function(ctx) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.r, 0, TAU);
@@ -168,6 +191,36 @@ function Ball() {
 function Point(x, y) {
   this.x = x;
   this.y = y;
+}
+
+function Vector(x, y) {
+  this.x = x;
+  this.y = y;
+  
+  this.dot = function(vec) {
+    return vec.x*x + vec.y*y;
+  }
+  
+  this.plusxy = function(ox, oy) {
+    return new Vector(x+ox, y+oy);
+  }
+
+  this.plus = function(vec) {
+    return new Vector(x+vec.x, y+vec.y);
+  }
+  
+  this.scale = function(s) {
+    return new Vector(s*x, s*y);
+  }
+  
+  this.normalize = function() {
+    let magn = this.magnitude();
+    return new Vector(x/magn, y/magn);
+  }
+
+  this.magnitude = function() { //TODO: getter?
+    return Math.sqrt(x*x + y*y);
+  }
 }
 
 </script>
