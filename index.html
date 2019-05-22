@@ -128,7 +128,7 @@ function LineCourse() {
     for (let i = 1; i < len; i++) {
       let p1 = p2;
       p2 = this.points[i];
-      let line = {p1:p1, p2:p2};
+      let line = {p1, p2};
       let r = ball.r + this.ctx.lineWidth/2;
       let collision = geometry.circleIntersectsLineSeg(ball, R, line);
       if (collision == null) continue;
@@ -152,32 +152,31 @@ function Ball() {
   this.color = "red";
 
   this.update = function() {
+    this.v = this.v.plusxy(0, G);
+    this.x += this.v.x;
+    this.y += this.v.y;
+
     let collision = course.collides(this);
-    if (collision != null) { // TODO: nudge and check next collision
+    if (collision != null) {
       let s = this.v.magnitude();
-
-      // if (collision.p1) {
-      //   this.x = collision.p1.x
-      //   this.y = collision.p1.y
-      // } else {
-      //   this.x = collision.p2.x
-      //   this.y = collision.p2.y
-      // }
-      
-      // let nudge = this.v.normalize().scale(-R*1.1);
-      // this.x += nudge.x
-      // this.y += nudge.y
-
       let v = this.v.normalize();
       let n = collision.normal;
       let r = v.plus(n.scale(-2*(v.dot(n))));
       this.v = r.scale(s * MU);
       
-    } 
-    
-    this.x += this.v.x;
-    this.y += this.v.y;
-    this.v = this.v.plusxy(0, G);
+      let p = collision.p1;
+      if (!p) p = collision.p2;
+      else if (collision.p2) p = midpoint(collision.p1, collision.p2)
+      let nudge = new Vector(this.x - p.x, this.y - p.y);
+      let ndist = R - nudge.magnitude();
+      nudge = nudge.normalize().scale(2 * ndist);
+      this.x += nudge.x;
+      this.y += nudge.y; // TODO: check if nudge causes collision
+    }
+
+    // if (this.v.magnitude() > BR) { //is this needed?
+    //   this.v = this.v.normalize().scale(BR);
+    // }
   }
 
   this.draw = function(ctx) {
@@ -186,6 +185,12 @@ function Ball() {
     ctx.fillStyle = this.color;
     ctx.fill();
   }
+}
+
+function midpoint(p1, p2) {
+  let x = p1.x + p2.x
+  let y = p1.y + p2.y
+  return new Point(x/2, y/2);
 }
 
 function Point(x, y) {
