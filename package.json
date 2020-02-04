@@ -1,0 +1,33 @@
+{
+  "name": "line-bounce",
+  "version": "1.0.0",
+  "description": "draw lines, bounce ball",
+  "main": "./src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "server": "webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EdricY/Line-Bounce.git"
+  },
+  "keywords": [
+    "game",
+    "puzzle",
+    "line",
+    "bounce"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EdricY/Line-Bounce/issues"
+  },
+  "homepage": "https://github.com/EdricY/Line-Bounce#readme",
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {}
+}
