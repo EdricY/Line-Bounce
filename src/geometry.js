@@ -36,3 +36,44 @@ export function circleIntersectsLineSeg(circle, radius, line){
   if (empty) return null;
   return ret;
 }
+
+export function midpoint(p1, p2) {
+  let x = p1.x + p2.x
+  let y = p1.y + p2.y
+  return new Point(x/2, y/2);
+}
+
+export function Point(x, y) {
+  this.x = x;
+  this.y = y;
+}
+
+export function Vector(x, y) {
+  this.x = x;
+  this.y = y;
+  
+  this.dot = function(vec) {
+    return vec.x*x + vec.y*y;
+  }
+  
+  this.plusxy = function(ox, oy) {
+    return new Vector(x+ox, y+oy);
+  }
+
+  this.plus = function(vec) {
+    return new Vector(x+vec.x, y+vec.y);
+  }
+  
+  this.scale = function(s) {
+    return new Vector(s*x, s*y);
+  }
+  
+  this.normalize = function() {
+    let magn = this.magnitude();
+    return new Vector(x/magn, y/magn);
+  }
+
+  this.magnitude = function() { //TODO: getter?
+    return Math.sqrt(x*x + y*y);
+  }
+}

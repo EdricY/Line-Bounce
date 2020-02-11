@@ -1,0 +1,10 @@
+export const canvas = document.getElementById("canvas");
+export const ctx = canvas.getContext("2d");
+export const TAU = 2 * Math.PI;
+export const W = canvas.width;
+export const H = canvas.height;
+export const G = .1;
+export const BR = 10;
+export const LW = 5;
+export const R = BR + LW/2;
+export const MU = 1;
