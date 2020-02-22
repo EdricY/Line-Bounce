@@ -19,7 +19,20 @@ import { midpress, initInputs, cursor } from "./input";
 var course = new LineCourse();
 var ball = new Ball();
 
-window["course"] = course;
+var menuBtn = document.getElementById("menuBtn");
+var playBtn = document.getElementById("playBtn");
+menuBtn.addEventListener("click", goToMenu);
+playBtn.addEventListener("click", startPlaying);
+
+function goToMenu() {
+  canvas.classList.add("nodisp");
+}
+
+function startPlaying() {
+  canvas.classList.remove("nodisp");
+}
+
+// window["course"] = course; //for debug
 
 (function init() {
   ctx.strokeStyle = '#FFF';
