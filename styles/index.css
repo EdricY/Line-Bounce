@@ -8,8 +8,56 @@ body {
   border: 0;
   padding: 0;
   touch-action: none;
+  overflow-x: hidden;
 }
 
 .nodisp {
-  display: none;
+  display: none !important;
+}
+
+#outer-div {
+  display: flex;
+  flex-flow: row;
+  height: 100vh;
+  width: 200vw;
+
+  transition: transform .5s;
+  transform: translateX(0px);
+}
+
+#outer-div.left-expand {
+  transform: translateX(300px);
+}
+
+#outer-div.right-expand {
+  transform: translateX(-300px);
+}
+
+.center-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#title-div {
+  flex-flow: column;
+}
+#title-div > div {
+  margin: 5px;
+}
+
+#left-drawer {
+  text-align: right;
+  background: #779;
+  border-radius: 0 20px;
+}
+
+#right-drawer {
+  text-align: left;
+  background: #977;
+  border-radius: 20px 0;
+}
+
+.fill {
+  flex: 1;
 }

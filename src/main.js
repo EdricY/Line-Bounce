@@ -20,7 +20,8 @@ var course = new LineCourse();
 var ball = new Ball();
 
 var menuBtn = document.getElementById("menuBtn");
-var playBtn = document.getElementById("playBtn");
+var playBtn = document.getElementById("play-btn");
+var outerDiv = document.getElementById("outer-div");
 menuBtn.addEventListener("click", goToMenu);
 playBtn.addEventListener("click", startPlaying);
 
@@ -29,6 +30,7 @@ function goToMenu() {
 }
 
 function startPlaying() {
+  outerDiv.classList.add("nodisp");
   canvas.classList.remove("nodisp");
 }
 
@@ -74,3 +76,21 @@ function drawPreviewLine(cursor) {
   ctx.stroke();
 }
 
+var leftDrawer = document.getElementById("left-drawer");
+leftDrawer.addEventListener("click", leftClicked)
+function leftClicked() {
+  outerDiv.classList.add("left-expand");
+  outerDiv.classList.remove("right-expand");
+}
+
+var rightDrawer = document.getElementById("right-drawer");
+rightDrawer.addEventListener("click", function() {
+  outerDiv.classList.add("right-expand");
+  outerDiv.classList.remove("left-expand");
+});
+
+var titleDiv = document.getElementById("title-div");
+titleDiv.addEventListener("click", function() {
+  outerDiv.classList.remove("left-expand");
+  outerDiv.classList.remove("right-expand");
+});
