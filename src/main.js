@@ -22,16 +22,18 @@ var ball = new Ball();
 var menuBtn = document.getElementById("menuBtn");
 var playBtn = document.getElementById("play-btn");
 var outerDiv = document.getElementById("outer-div");
+var gameContainer = document.getElementById("game-container");
 menuBtn.addEventListener("click", goToMenu);
 playBtn.addEventListener("click", startPlaying);
 
 function goToMenu() {
-  canvas.classList.add("nodisp");
+  gameContainer.classList.add("nodisp");
+  outerDiv.classList.remove("nodisp");
 }
 
 function startPlaying() {
   outerDiv.classList.add("nodisp");
-  canvas.classList.remove("nodisp");
+  gameContainer.classList.remove("nodisp");
 }
 
 // window["course"] = course; //for debug

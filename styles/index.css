@@ -22,21 +22,25 @@ body {
   width: 200vw;
 
   transition: transform .5s;
-  transform: translateX(0px);
+  transform: translateX(0);
 }
 
 #outer-div.left-expand {
-  transform: translateX(300px);
+  transform: translateX(50vw);
 }
 
 #outer-div.right-expand {
-  transform: translateX(-300px);
+  transform: translateX(-50vw);
 }
 
 .center-container {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#game-container {
+  flex-flow: column;
 }
 
 #title-div {
